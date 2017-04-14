@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by vaa25 on 25.03.2017.
@@ -16,7 +16,7 @@ public class WriteTorrents {
         this.folder = folder;
     }
 
-    public void write(List<Torrent> torrents) {
+    public void write(Collection<Torrent> torrents) {
         torrents.forEach(this::write);
     }
 
