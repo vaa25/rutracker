@@ -27,7 +27,7 @@ public class ShaOne {
     private String byteArray2Hex(final byte[] hash) {
         final Formatter formatter = new Formatter();
         for (byte b : hash) {
-            formatter.format("%02x", b);
+            formatter.format("%%%02x", b);
         }
         return formatter.toString();
     }

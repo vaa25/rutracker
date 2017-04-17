@@ -8,10 +8,12 @@ import bt.bencoding.model.BEObject;
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import torrent.Torrent;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -53,17 +55,18 @@ public class PlayTorrent {
 //        play(parser.readMap(), type);
         String announce = root.announce();
         Map<String, String> data = new HashMap<>();
-//        data.put("info_hash", root.info().hash());
-        data.put("info_hash", "aaaaaaaaaaaaaaaaaaaa");
+        data.put("info_hash", root.info().hash());
         data.put("peer_id", UUID.randomUUID().toString().replace("-", "").substring(0, 20));
-        data.put("peer_id", "aaaaaaaaaaaaaaaaaaaa");
         data.put("port", String.valueOf(6881));
         data.put("uploaded", String.valueOf(0));
         data.put("downloaded", String.valueOf(0));
         data.put("left", String.valueOf(root.info().files().list().stream().mapToLong(file -> file.length()).sum()));
         data.put("event", "started");
+        data.put("ip", "213.200.55.35");
+
         Connection.Response response = connect(announce, data);
         response.body();
+        System.exit(0);
     }
 
     private Connection.Response connect(String announce, Map<String, String> data)
@@ -75,12 +78,21 @@ public class PlayTorrent {
                 sleep(1000);
                 port = new Random().nextInt(1000) + 6000;
 //                data.put("port", String.valueOf(port));
-                response = Jsoup.connect(announce).data(data).execute();
+                final URL url = new URL(announce + new UrlParameters(data));
+                final URL url2 =
+                        new URL("http://bt1.archive.org:6969/announce?info_hash=%ac%c3%b2%e43%d7%c7GZ%bbYA%b5h%1c%b7%a1%ea%26%e2&peer_id=-AZ2060-ABCDEFGHIJKL&ip=80.11.255.166&port=6881&downloaded=0&left=970");
+//                final URLConnection connection = url2.openConnection();
+//                connection.connect();
+//                connection.getInputStream();
+//                System.out.println(url);
+//                System.out.println(url2);
+                final Document parse = Jsoup.parse(url2, 10000);
+                response = Jsoup.connect(announce + new UrlParameters(data)).execute();
             } catch (HttpStatusException e) {
                 System.out.println(e.toString());
             }
         } while (response == null || response.statusCode() == 403);
-        System.out.println(port);
+        System.out.println(data.get("port"));
         System.out.println(response.statusCode());
         return response;
     }

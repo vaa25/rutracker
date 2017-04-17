@@ -1,6 +1,7 @@
 package torrent.play;
 
 import bt.bencoding.BEParser;
+import bt.bencoding.model.BEObject;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,8 @@ public class TorrentRoot {
     }
 
     public String publisher() {
-        return new String(root.get("publisher").getContent());
+        final BEObject<?> publisher = root.get("publisher");
+        return publisher == null ? "" : new String(publisher.getContent());
     }
 
     public String comment() {

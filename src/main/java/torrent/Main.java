@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -26,9 +27,15 @@ public class Main {
         ).cookies();
         final String loadedFolder = properties.getProperty("torrent.loaded.folder");
         final String autoloadFolder = properties.getProperty("torrent.autoload.folder");
-        final List<Torrent> finished = new FileTorrents(loadedFolder).get();
+        final List<Torrent> finished = new FileTorrents(loadedFolder)
+                .get()
+                .stream()
+                .filter(torrent -> "rutracker.org".equals(torrent.root().publisher()))
+                .collect(
+                        toList());
+        final Torrent next = finished.get(0);
+//        new PlayTorrent(next).play();
         final Map<Torrent, Torrent> downloaded = new DownloadTorrents(finished, cookies).get();
-//        download.stream().map(PlayTorrent::new).forEach(PlayTorrent::play);
         final List<Torrent> autoload = new FileTorrents(autoloadFolder).get();
         final List<Torrent> loading = new FileTorrents(properties.getProperty("torrent.loading.folder")).get();
         final Map<Torrent, Torrent> updated = downloaded
